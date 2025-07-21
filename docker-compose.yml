@@ -11,7 +11,8 @@ services:
     volumes:
       - .:/var/www/html
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     environment:
       APP_ENV: local
       APP_DEBUG: true
@@ -23,24 +24,48 @@ services:
       DB_PASSWORD: Loand@2019!
     networks:
       - agenda-network
+    restart: unless-stopped
 
   postgres:
-    image: postgres:15
+    image: postgres:17-alpine
     container_name: agenda-postgres
-    restart: always
+    restart: unless-stopped
     ports:
       - "5433:5432"
     environment:
       POSTGRES_DB: Agenda_api
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: Loand@2019!
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
     volumes:
       - pg_data:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d
     networks:
       - agenda-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d Agenda_api"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    command: >
+      postgres
+      -c shared_preload_libraries=pg_stat_statements
+      -c pg_stat_statements.track=all
+      -c max_connections=200
+      -c shared_buffers=256MB
+      -c effective_cache_size=1GB
+      -c maintenance_work_mem=64MB
+      -c checkpoint_completion_target=0.9
+      -c wal_buffers=16MB
+      -c default_statistics_target=100
+      -c random_page_cost=1.1
+      -c effective_io_concurrency=200
 
 volumes:
   pg_data:
+    driver: local
 
 networks:
   agenda-network:
+    driver: bridge
