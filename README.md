@@ -1,96 +1,252 @@
-# AGENDA-API
+# 📅 Agenda API
 
-## Descrição: 
-    A Agenda API é uma aplicação backend que permite a criação, leitura, atualização e exclusão de agendament(Appointments) e lembretes (Reminders), utilizando a arquitetura RESTful, com autenticação via Laravel Sanctum. Ideal para integração com aplicações frontend (web ou mobile).
+Uma API REST completa para gerenciamento de agendamentos e lembretes, desenvolvida em Laravel 12 com PostgreSQL 17.
 
-### Funcionalidades
+## 🚀 Funcionalidades
 
-Agendamentos (Appointments)
-    Criação de agendamentos com título, descrição, status, data, hora de início e fim.
+- **Autenticação JWT** - Sistema completo de login/registro
+- **Gerenciamento de Usuários** - CRUD completo com soft deletes
+- **Agendamentos** - Criação, edição e consulta de appointments
+- **Lembretes** - Sistema de notificações e lembretes
+- **API RESTful** - Endpoints padronizados com documentação Swagger
+- **Filtros Avançados** - Sistema de filtros para consultas
+- **Validações** - Validações robustas em todas as operações
+- **Internacionalização** - Suporte a português brasileiro
 
-    Relacionamento entre usuários e agendamentos (um usuário pode ter múltiplos agendamentos).
+## 🛠️ Tecnologias
 
-    Eager loading para retornar lembretes associados aos agendamentos.
+- **Backend**: Laravel 12.17.0
+- **Banco de Dados**: PostgreSQL 17
+- **Autenticação**: Laravel Sanctum
+- **Documentação**: L5-Swagger (OpenAPI)
+- **Containerização**: Docker & Docker Compose
+- **Cache**: Redis (via Docker)
 
-Lembretes (Reminders)
-    Criação de lembretes associados aos agendamentos.
+## 📋 Pré-requisitos
 
-    Definição de horário para o lembrete e método de notificação (email, mensagem, notificação), entre outros.
+### Para Docker (Recomendado)
+- Docker Desktop
+- Docker Compose
 
-Filtros
-    Filtros para busca de agendamentos e lembretes por diferentes parâmetros (data, status, método de notificação).
-    Suporte a soft deletes com filtros como `trashed=only` ou `trashed=with`.
+### Para Instalação Local
+- PHP 8.1+
+- Composer
+- PostgreSQL 12+
+- Extensões PHP: pdo_pgsql, mbstring, openssl, tokenizer, xml, ctype, json
 
-### Tecnologias
-    PHP 8.x
+## 🐳 Instalação com Docker (Recomendado)
 
-    Laravel 12.x
+### 1. Clone o repositório
+```bash
+git clone <repository-url>
+cd agenda-api
+```
 
-    MySQL ou MariaDB
+### 2. Execute o script de configuração
+```bash
+# Windows
+.\setup-docker.ps1
 
-    Laravel Sanctum para autenticação via API
+# Linux/Mac
+./setup-docker.sh
+```
 
-    Postman ou Insomnia para testes de endpoints da API
+### 3. Acesse a aplicação
+- **API**: http://localhost:8081
+- **Documentação Swagger**: http://localhost:8081/api/documentation
+- **PostgreSQL**: localhost:5433
 
-    Laravel Herd como ambiente de desenvolvimento local  
-    Swagger para documentação da API  
+## 💻 Instalação Local (Sem Docker)
 
-### Pré-requisitos
-    Antes de rodar a aplicação, verifique se você tem os seguintes pré-requisitos instalados:
+### 1. Execute o script de configuração
+```bash
+# Windows
+.\setup-local.ps1
 
-    PHP (versão 8.3 ou superior).
+# Linux/Mac
+./setup-local.sh
+```
 
-    Composer.
+### 2. Configure o banco de dados
+Edite o arquivo `.env` com suas credenciais do PostgreSQL:
+```env
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=Agenda_api
+DB_USERNAME=postgres
+DB_PASSWORD=sua_senha
+```
 
-    MySQL ou MariaDB.
+### 3. Acesse a aplicação
+- **API**: http://localhost:8000
+- **Documentação Swagger**: http://localhost:8000/api/documentation
 
-    Laravel Herd 
+## 📚 Documentação da API
 
-    .env configurado com as credenciais do banco de dados.
+### Endpoints Principais
 
+#### Autenticação
+- `POST /api/register` - Registro de usuário
+- `POST /api/login` - Login
+- `POST /api/logout` - Logout
+- `POST /api/forgot-password` - Recuperação de senha
 
-### Como Rodar o Projeto Localmente
-    Clone o repositório:
+#### Usuários
+- `GET /api/users` - Listar usuários
+- `GET /api/users/{id}` - Detalhes do usuário
+- `PUT /api/users/{id}` - Atualizar usuário
+- `DELETE /api/users/{id}` - Excluir usuário (soft delete)
 
- git clone https://github.com/JoelsonPedroMutute/agenda-api.git
+#### Agendamentos
+- `GET /api/appointments` - Listar agendamentos
+- `POST /api/appointments` - Criar agendamento
+- `GET /api/appointments/{id}` - Detalhes do agendamento
+- `PUT /api/appointments/{id}` - Atualizar agendamento
+- `DELETE /api/appointments/{id}` - Excluir agendamento
 
+#### Lembretes
+- `GET /api/reminders` - Listar lembretes
+- `POST /api/reminders` - Criar lembrete
+- `GET /api/reminders/{id}` - Detalhes do lembrete
+- `PUT /api/reminders/{id}` - Atualizar lembrete
+- `DELETE /api/reminders/{id}` - Excluir lembrete
 
-###  Instale as dependências:
-    composer install
+### Filtros Disponíveis
+- **Usuários**: nome, email, telefone, role
+- **Agendamentos**: título, data, status, usuário
+- **Lembretes**: título, data, tipo, status
 
-### Copie o arquivo de ambiente e gere a chave da aplicação: 
-    copy .env.example .env 
-    php artisan key:generate
+## 🔧 Comandos Úteis
 
-### Configure seu banco de dados no arquivo .env. com os dados corretos do banco de dados. Exemplo: 
-    DB_CONNECTION=mysql  
-    DB_HOST=127.0.0.1  
-    DB_PORT=3306  
-    DB_DATABASE=agenda  
-    DB_USERNAME=root  
-    DB_PASSWORD=
-   
+### Docker
+```bash
+# Iniciar containers
+docker-compose up -d
 
-###  Comandos para Migrations, Seeders, Factories e Resources
-    Rodar Migrations: php artisan migrate
+# Ver logs
+docker-compose logs -f app
 
-### Se quiser resetar as tabelas e rodar novamente, use:
-    php artisan migrate:fresh
+# Executar comandos Artisan
+docker-compose exec app php artisan [comando]
 
-### Rodar Seeders
-    php artisan db:seed
+# Parar containers
+docker-compose down
 
-### Se você quiser rodar um seeder específico, por exemplo, o seeder de User
-    php artisan db:seed --class=UserSeeder
+# Rebuild containers
+docker-compose up -d --build
+```
 
-###  Inicie o servidor:
-    Se estiver utilizando Laravel Herd:
-    O servidor é iniciado automaticamente. A API estará disponível em: http://agenda_api.test
-    
-    Se estiver utilizando Laragon ou ambiente tradicional:
-    Inicie o servidor com:
-    php artisan serve
-    A API estará disponível em http://127.0.0.1:8000
+### Local
+```bash
+# Iniciar servidor de desenvolvimento
+php artisan serve
 
-### Contribuindo
-    Se você quiser contribuir para o projeto, sinta-se à vontade para criar uma pull request com suas alterações. Basta fazer um fork do repositório, criar uma branch com sua feature, fazer os commits necessários e abrir uma pull request com uma descrição clara do que foi implementado.
+# Executar migrações
+php artisan migrate
+
+# Executar seeders
+php artisan db:seed
+
+# Limpar cache
+php artisan cache:clear
+
+# Ver rotas
+php artisan route:list
+```
+
+## 🗄️ Estrutura do Banco de Dados
+
+### Tabelas Principais
+- **users** - Usuários do sistema
+- **appointments** - Agendamentos
+- **reminders** - Lembretes
+- **personal_access_tokens** - Tokens de autenticação
+- **password_resets** - Reset de senhas
+
+### Relacionamentos
+- Usuário → Agendamentos (1:N)
+- Usuário → Lembretes (1:N)
+- Agendamento → Lembretes (1:N)
+
+## 🧪 Testes
+
+```bash
+# Executar todos os testes
+php artisan test
+
+# Executar testes específicos
+php artisan test --filter=UserTest
+
+# Executar com coverage
+php artisan test --coverage
+```
+
+## 📁 Estrutura do Projeto
+
+```
+agenda-api/
+├── app/
+│   ├── Http/Controllers/     # Controllers da API
+│   ├── Models/              # Models Eloquent
+│   ├── Services/            # Lógica de negócio
+│   ├── Filters/             # Filtros para consultas
+│   └── Swagger/             # Documentação OpenAPI
+├── database/
+│   ├── migrations/          # Migrações do banco
+│   ├── seeders/            # Seeders para dados iniciais
+│   └── factories/          # Factories para testes
+├── routes/
+│   ├── api.php             # Rotas da API
+│   └── web.php             # Rotas web
+├── docker/                 # Configurações Docker
+├── scripts/                # Scripts de configuração
+└── docs/                   # Documentação adicional
+```
+
+## 🔒 Segurança
+
+- Autenticação via Laravel Sanctum
+- Validação de dados em todas as requisições
+- Rate limiting configurado
+- CORS configurado para desenvolvimento
+- Sanitização de inputs
+- Soft deletes para preservar dados
+
+## 🌍 Internacionalização
+
+O projeto suporta português brasileiro com:
+- Mensagens de validação traduzidas
+- Mensagens de erro personalizadas
+- Formatação de datas em PT-BR
+
+## 📝 Logs
+
+Os logs são armazenados em:
+- **Docker**: `storage/logs/laravel.log`
+- **Local**: `storage/logs/laravel.log`
+
+## 🤝 Contribuição
+
+1. Fork o projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
+
+## 🆘 Suporte
+
+Se encontrar problemas:
+
+1. Verifique se o Docker está rodando (para instalação Docker)
+2. Verifique as configurações do `.env`
+3. Consulte os logs em `storage/logs/laravel.log`
+4. Execute `php artisan config:clear` e `php artisan cache:clear`
+
+## 📞 Contato
+
+Para dúvidas ou sugestões, entre em contato através dos issues do GitHub.
